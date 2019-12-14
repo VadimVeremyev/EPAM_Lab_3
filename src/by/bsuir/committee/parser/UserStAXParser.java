@@ -25,11 +25,8 @@ public class UserStAXParser implements AutoCloseable, XMLParser<Enrollee> {
             while (reader.hasNext()) { 
                 int event = reader.next();   
                 if (event == XMLEvent.START_ELEMENT &&
-                        "client".equals(reader.getLocalName())) {
+                        "enrollee".equals(reader.getLocalName())) {
                     Enrollee enrollee = new Enrollee();
-
-                    doUntil(XMLEvent.START_ELEMENT, "id");
-                    enrollee.setId(Integer.parseInt(reader.getElementText()));
 
                     doUntil(XMLEvent.START_ELEMENT, "firstName");
                     enrollee.setFirstName(reader.getElementText());
@@ -43,8 +40,12 @@ public class UserStAXParser implements AutoCloseable, XMLParser<Enrollee> {
                     doUntil(XMLEvent.START_ELEMENT, "facultyName");
                     enrollee.setFacultyName(reader.getElementText());
                   
+                    doUntil(XMLEvent.START_ELEMENT, "id");
+                    enrollee.setId(Integer.parseInt(reader.getElementText()));
+                    
                     enrollees.add(enrollee);
                 }
+                event = XMLEvent.START_ELEMENT;
             }
         } catch (XMLStreamException e) {
             System.out.println("SrAX parse error: " + e.getMessage());

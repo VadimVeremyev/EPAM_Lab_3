@@ -1,9 +1,9 @@
 package by.bsuir.committee.servlets;
 
+import by.bsuir.committee.parser.UserDomParser;
 import by.bsuir.committee.parser.UserSaxParser;
-
+import by.bsuir.committee.parser.UserStAXParser;
 import by.bsuir.committee.Constants;
-
 import by.bsuir.committee.entity.Enrollee;
 
 import javax.servlet.RequestDispatcher;
@@ -15,11 +15,14 @@ import javax.xml.XMLConstants;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
+import javax.xml.stream.XMLStreamException;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.SchemaFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 
 
@@ -30,7 +33,6 @@ public class ListServlet extends HttpServlet {
 
     public boolean validate(File xml, File xsd)
     {
-    	System.err.println(xsd + " <- xsd prov  xml-> " + xml);
         try {
             SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI)
                     .newSchema(xsd)
@@ -54,7 +56,8 @@ public class ListServlet extends HttpServlet {
             System.out.println("Invalid format of xmlFile");
             System.exit(0);
         }
-
+ /*
+        //Sax PARSER START =====================================
 		SAXParserFactory factory = SAXParserFactory.newInstance();
 		SAXParser parser = null;
 		
@@ -75,6 +78,33 @@ public class ListServlet extends HttpServlet {
 		}
 
 		List<Enrollee> enrollees = saxp.getData(xmlPath);
+		//Sax PARSER END ========================================
+*/
+        
+        
+        //************************  DOM parser   *****************/
+        UserDomParser dom = new UserDomParser(xmlPath, xsdPath);
+        List<Enrollee> enrollees = null;
+        enrollees = dom.getData("");
+      /********************************************************/
+
+/*
+      //*********************StAX************************
+        UserStAXParser StAX = null;
+        List<Enrollee> enrollees = null;
+        try {
+            StAX = new UserStAXParser(Files.newInputStream(Paths.get(xmlPath)));
+            enrollees = StAX.getData(null);
+        } catch (XMLStreamException | IOException e) {
+            e.printStackTrace();
+            return;
+        }
+        finally {
+        	if(StAX != null)
+        		StAX.close();
+        }
+*/  
+      /********************************************************/
 		
         int index = Integer.parseInt(req.getParameter("pageIndex") == null ? "1" : req.getParameter("pageIndex"));
 

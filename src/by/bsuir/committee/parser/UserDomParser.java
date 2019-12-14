@@ -25,7 +25,7 @@ public class UserDomParser implements XMLParser<Enrollee> {
     private static final String FIRST_NAME = "firstName";
     private static final String MIDDLE_NAME = "middleName";
     private static final String LAST_NAME = "lastName";
-    private static final String FACULTY_NAME = "faculryName";
+    private static final String FACULTY_NAME = "facultyName";
 
     private DocumentBuilder documentBuilder;
     private String sourceFilePath;
@@ -118,8 +118,18 @@ public class UserDomParser implements XMLParser<Enrollee> {
     }
 
     private static String getElementTextContent(Element element, String elementName) {
-        NodeList nList = element.getElementsByTagName(elementName);
-        Node node = nList.item(0);
+        if(element == null)
+        	return null;
+        
+    	NodeList nList = element.getElementsByTagName(elementName);
+        if(nList == null)
+        	return null;
+        
+    	Node node = nList.item(0);
+    	
+    	if(node == null)
+    		return null;
+    	
         return node.getTextContent();
     }
 
