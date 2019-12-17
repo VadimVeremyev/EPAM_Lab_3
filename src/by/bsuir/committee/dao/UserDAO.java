@@ -1,67 +1,34 @@
 package by.bsuir.committee.dao;
 
-import java.util.ArrayList;
-import java.util.List;
+import by.bsuir.committee.Db.ConnectionPool;
+import by.bsuir.committee.Db.DbConnectionPool;
+import by.bsuir.committee.Db.UserDb;
+import by.bsuir.committee.entity.User;
+import by.bsuir.committee.helpinfo.DaoHelpinfo;
 
-import by.bsuir.committee.entity.Enrollee;
+import java.sql.SQLException;
 
-public class UserDAO implements DAO<Enrollee>{
+public class UserDao implements by.bsuir.committee.daoInterfaces.UserDao {
+    private static ConnectionPool connectionPool;
 
-    private static UserDAO ourInstance = new UserDAO();
-
-    static UserDAO getInstance() {
-        return ourInstance;
+    public UserDao() {
+        try {
+            connectionPool = DbConnectionPool.create(DaoHelpinfo.getUrl(), DaoHelpinfo.getUsername(), DaoHelpinfo.getPassword());
+        } catch (SQLException e) {
+            connectionPool = null;
+        }
     }
-    
-    private UserDAO() {
+
+    public User getUser(String name, String password) {
+        return UserDb.getUser(name, password, connectionPool);
     }
 
-    private List<Enrollee> enrolleeList = new ArrayList<>();
-	
-	@Override
-	public void delete(Enrollee obj) {
-        for (Enrollee enrollee : enrolleeList) {
-            if (enrollee.equals(obj)) {
-            	enrolleeList.remove(obj);
-                return;
-            }
-        }	
-	}
+    public User getUserByName(String name) {
+        return UserDb.getUserByName(name, connectionPool);
+    }
 
-	@Override
-	public void add(Enrollee obj) {
-		boolean inList = false;
-        if (obj != null) {
-        	for (Enrollee enrollee : enrolleeList) {
-            	if (enrollee.equals(obj)) {
-                	inList = true;
-            	}
-        	}
-        	if(!inList)
-        		enrolleeList.add(obj);
-        }
-		
-	}
+    public void addUser(String name, String password) {
+        UserDb.createUser(new User(name, password), connectionPool);
+    }
 
-	@Override
-	public Enrollee get(String id) {
-        for (Enrollee enrollee : enrolleeList) {
-            if (enrollee.getId() == Integer.parseInt(id)) {
-                return enrollee;
-            }
-        }
-		return null;
-	}
-
-	@Override
-	public void addAll(List<Enrollee> list) {
-        if (list != null) {
-        	enrolleeList.addAll(list);
-        }
-	}
-
-	@Override
-	public List<Enrollee> getAll() {
-		return enrolleeList;
-	}
 }

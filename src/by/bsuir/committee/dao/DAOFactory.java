@@ -1,22 +1,15 @@
 package by.bsuir.committee.dao;
 
-import by.bsuir.committee.entity.Enrollee;
+public class DaoFactory {
+    private static EnrolleeDao enrolleeDao = new EnrolleeDao();
+    private static UserDao userDao = new UserDao();
 
-public class DAOFactory {
-    private static DAOFactory ourInstance = new DAOFactory();
-
-    public static DAOFactory getInstance() {
-
-        return ourInstance;
+    public static EnrolleeDao getEnrolleeDao() {
+        return enrolleeDao;
     }
 
-    private final DAO<Enrollee> DaoUser = UserDAO.getInstance();
-
-    public DAO<Enrollee> getDAOUser() {
-
-        return DaoUser;
+   public static UserDao getUserDao() {
+        return userDao;
     }
 
-    private DAOFactory() {
-    }
 }

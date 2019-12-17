@@ -28,8 +28,8 @@ import org.xml.sax.SAXException;
 import java.beans.XMLEncoder;
 import java.io.FileOutputStream;
 
-import by.bsuir.committee.dao.DAOFactory;
-import by.bsuir.committee.dao.UserDAO;
+import by.bsuir.committee.dao.DaoFactory;
+import by.bsuir.committee.dao.EnrolleeDao;
 import by.bsuir.committee.entity.Committee;
 import by.bsuir.committee.entity.Enrollee;
 
@@ -65,8 +65,8 @@ public class userService implements Service<Enrollee>{
 	@Override
 	public boolean add(Committee committee) {
 		
-		DAOFactory daoFactory = DAOFactory.getInstance();
-	    UserDAO daoUser = (UserDAO) daoFactory.getDAOUser();
+
+	    EnrolleeDao daoUser = DaoFactory.getEnrolleeDao();
 	  
 		Enrollee enrollees = null;
 		
@@ -88,14 +88,14 @@ public class userService implements Service<Enrollee>{
            System.out.println("Exception thrown: " + e);
 		}
 	
-		daoUser.add(enrollees);
+		daoUser.addEnrollee(enrollees);
+		
 		return committee.addEntollee(enrollees);
 		
 	}
 
 	@Override
 	public Enrollee get(int id, Committee committee) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -114,11 +114,9 @@ public class userService implements Service<Enrollee>{
 
 	@Override
 	public boolean remove(int id, Committee committee) {
-		DAOFactory daoFactory = DAOFactory.getInstance();
-	    UserDAO daoUser = (UserDAO) daoFactory.getDAOUser();
+		EnrolleeDao daoEnrollee = DaoFactory.getEnrolleeDao();
 	    
-	    Enrollee enrollees = committee.getEnrollee(id);
-	    daoUser.delete(enrollees);
+	    daoEnrollee.deleteEnrollee(id);
 		
 	    return committee.removeEnrollee(id);
 	}
@@ -206,10 +204,13 @@ public class userService implements Service<Enrollee>{
 	}
 	
 	public void load(String fileName, Committee committee) {	    
-		DAOFactory daoFactory = DAOFactory.getInstance();
-	    UserDAO daoUser = (UserDAO) daoFactory.getDAOUser();
+		EnrolleeDao daoUser = DaoFactory.getEnrolleeDao();
+		
+		List<Enrollee> enrollees = committee.getList();
 	  
-	    daoUser.addAll(committee.getList());
+	    for (Enrollee enrollee : enrollees) {
+	    	daoUser.addEnrollee(enrollee);	
+		}
 	}
 	
 	public void save(String fileName) {
@@ -222,15 +223,13 @@ public class userService implements Service<Enrollee>{
 	       
 			List<Enrollee> enrolleeList;
 						
-			DAOFactory daoFactory = DAOFactory.getInstance();
-		    UserDAO daoUser = (UserDAO) daoFactory.getDAOUser();
-		  
-
+			EnrolleeDao daoUser = DaoFactory.getEnrolleeDao();
+		 
 			FileOutputStream fos = new FileOutputStream(new File(fileName));
 				
 			XMLEncoder encoder = new XMLEncoder(fos);
 				
-			enrolleeList = daoUser.getAll();
+			enrolleeList = daoUser.getEnrollees();
 				
 			for(Enrollee enrollee : enrolleeList) {	
 				Element enrolleeTag = document.createElement("enrollee");
@@ -266,10 +265,8 @@ public class userService implements Service<Enrollee>{
 			if(fos != null)
 				fos.close();
 		} catch (SAXException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		} catch (IOException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 	
